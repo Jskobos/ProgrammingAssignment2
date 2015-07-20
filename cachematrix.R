@@ -19,7 +19,7 @@ makeCacheMatrix <- function(x = matrix()) {
 }
 
 
-## Take a makeCacheMatrix list object as an argument. If the matrix's
+## Takes a makeCacheMatrix list object as an argument. If the matrix's
 ## inverse has already been calculated and cached, returns the cache.
 ## Otherwise calculates and caches the inverse.
 
@@ -33,4 +33,37 @@ cacheSolve <- function(x, ...) {
     new_inverse <- solve(x$get())
     x$setInverse(new_inverse)
     new_inverse
+}
+
+testAssignment2 <- function() {
+    ## Set sample matrices
+    t1 <- matrix(c(2,3,2,2),nrow=2,ncol=2)
+    t2 <- matrix(c(1,0,5,2,1,6,3,4,0),ncol=3,nrow=3)
+    
+    ## Create cacheable matrix
+    test_cache <- makeCacheMatrix(t1)
+    stopifnot(test_cache$get() == t1)
+    
+    ## Test set() function
+    test_cache$set(t2)
+    stopifnot(test_cache$get() == t2)
+    
+    ## Does cacheSolve() return the correct result?
+    solved <- cacheSolve(test_cache)
+    stopifnot(solved == solve(t2))
+    
+    ## Retry the call to see if the cache is used.
+    solved_again <- cacheSolve(test_cache)
+    stopifnot(solved_again == solve(t2))
+    
+    ## Now try with t1
+    test_cache$set(t1)
+    solved <- cacheSolve(test_cache)
+    stopifnot(solved == solve(t1))
+    
+    ## Once again, hopefully using the cache:
+    solved_again <- cacheSolve(test_cache)
+    stopifnot(solved_again == solve(t1))
+    
+    message("All tests passed. Check console to ensure caching was used.")
 }
